@@ -1,3 +1,5 @@
+// +build linux darwin dragonfly freebsd netbsd openbsd
+
 // Copyright (C) 2016 Max Riveiro
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -16,7 +18,7 @@ import (
 
 const fileNameTemplate = "reuseport.%d.%s.%s"
 
-var unsupportedProtoError = errors.New("Only tcp, tcp4, tcp6, udp, udp4, udp6 are supported")
+var errUnsupportedProtocol = errors.New("only tcp, tcp4, tcp6, udp, udp4, udp6 are supported")
 
 // getSockaddr parses protocol and address and returns implementor syscall.Sockaddr: syscall.SockaddrInet4 or syscall.SockaddrInet6.
 func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
@@ -26,7 +28,7 @@ func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error
 	case "udp", "udp4", "udp6":
 		return getUDPSockaddr(proto, addr)
 	default:
-		return nil, -1, unsupportedProtoError
+		return nil, -1, errUnsupportedProtocol
 	}
 }
 
