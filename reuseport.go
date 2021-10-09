@@ -22,6 +22,8 @@ const (
 	filePrefix            = "port."
 )
 
+var listenerBacklog = maxListenerBacklog()
+
 // getSockaddr parses protocol and address and returns implementor syscall.Sockaddr: syscall.SockaddrInet4 or syscall.SockaddrInet6.
 func getSockaddr(proto, addr string) (sa syscall.Sockaddr, soType int, err error) {
 	var (
@@ -73,6 +75,10 @@ func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 		}
 	}()
 
+	if err = syscall.SetsockoptInt(fd, syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1); err != nil {
+		return nil, err
+	}
+
 	if err = syscall.SetsockoptInt(fd, syscall.SOL_SOCKET, reusePort, 1); err != nil {
 		return nil, err
 	}
@@ -82,7 +88,7 @@ func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 	}
 
 	// Set backlog size to the maximum
-	if err = syscall.Listen(fd, syscall.SOMAXCONN); err != nil {
+	if err = syscall.Listen(fd, listenerBacklog); err != nil {
 		return nil, err
 	}
 
