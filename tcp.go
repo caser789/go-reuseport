@@ -1,4 +1,6 @@
-// Copyright (C) 2016 Max Riveiro
+// +build linux darwin dragonfly freebsd netbsd openbsd
+
+// Copyright (C) 2017 Max Riveiro
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -85,7 +87,8 @@ func determineTCPProto(proto string, ip *net.TCPAddr) (string, error) {
 	return "", errUnsupportedTCPProtocol
 }
 
-// NewReusablePortListener returns net.FileListener that created from a file discriptor for a socket with SO_REUSEPORT option.
+// NewReusablePortListener returns net.FileListener that created from
+// a file discriptor for a socket with SO_REUSEPORT option.
 func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 	var (
 		soType, fd int
@@ -136,9 +139,4 @@ func NewReusablePortListener(proto, addr string) (l net.Listener, err error) {
 	}
 
 	return l, err
-}
-
-// Listen function is an alias for NewReusablePortListener.
-func Listen(proto, addr string) (l net.Listener, err error) {
-	return NewReusablePortListener(proto, addr)
 }
